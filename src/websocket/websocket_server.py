@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 import time
+import ast
 
 class Config:
        IPs = {"ubuntu_laptop":"192.168.129.24",
@@ -23,14 +24,13 @@ async def pi_zero_request(rpi_name,instruction):
     uri = f"ws://{Config.IPs[rpi_name]}:{Config.WEBSOCKET_PORT}"  
 
     async with websockets.connect(uri) as websocket:
-        print("Connection from pi 5 to Zero established")
-        print(f"sending instruction to {rpi_name}({Config.IPs[rpi_name]}): {instruction}") 
-
+        #print("Connection from pi 5 to Zero established")
+        #print(f"sending instruction to {rpi_name}({Config.IPs[rpi_name]}): {instruction}") 
         await websocket.send(instruction) 
         message = await websocket.recv() 
 
         # Receive one message per instruction 
-        print(f"Received message on server: {message}") 
+        #print(f"Received message on server: {message}") 
         if instruction=="read_bmp":
             temperature, pressure, altitude = message.split("/")
             return temperature, pressure, altitude
@@ -40,16 +40,24 @@ async def pi_zero_request(rpi_name,instruction):
         return message
     
 async def run():
+    import pandas as pd
+    data = []
+    columns = ["ax","ay","az","vrx,vry,vrz"]
     room = "piZero4"
     instructions = ["read_bmp","read_mpu"]
+    t=-1
     while True:
+        t+=1
+        if t == 1000:
+            break
+        acc_raw,gyr_raw,T = await pi_zero_request(room,instructions[1])
+        acc = acc_raw[1:-1].split(",")
+        gyr = gyr_raw[1:-1].split(",")
+        data.append([float(acc[0]),float(acc[1]),float(acc[2]),float(gyr[0]),float(gyr[1]),float([gyr[2]])])
 
-        acc,gyr,T = await pi_zero_request(room,instructions[1])
-        print(f"Acceleratio is: {acc}")
-        print(f"Acceleratio is: {gyr}")
-        print(f"Acceleratio is: {T}")
-        print(f"---------------------")
-        break
+    df = pd.DataFrame(data=data,columns=columns)
+    df["ax"].plot()
+        
 
 if __name__=="__main__":
     asyncio.get_event_loop().run_until_complete(run())
