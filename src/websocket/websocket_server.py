@@ -32,18 +32,23 @@ async def pi_zero_request(rpi_name,instruction):
         # Receive one message per instruction 
         print(f"Received message on server: {message}") 
         if instruction=="read_bmp":
-            temperature, pressure, altitude = message.split("-")
+            temperature, pressure, altitude = message.split("/")
             return temperature, pressure, altitude
         if instruction=="read_mpu":
-            acceleration, gyro, temperature = message.split("-")
+            acceleration, gyro, temperature = message.split("/")
             return acceleration, gyro, temperature
         return message
     
 async def run():
     room = "piZero4"
-    instructions = ["read_acc","read_gyr"]
+    instructions = ["read_bmp","read_mpu"]
     while True:
-        await pi_zero_request(room,instructions[0])
+
+        acc,gyr,T = await pi_zero_request(room,instructions[1])
+        print(f"Acceleratio is: {acc}")
+        print(f"Acceleratio is: {gyr}")
+        print(f"Acceleratio is: {T}")
+        print(f"---------------------")
         break
 
 if __name__=="__main__":
