@@ -42,18 +42,19 @@ async def pi_zero_request(rpi_name,instruction):
 async def run():
     import pandas as pd
     data = []
-    columns = ["ax","ay","az","vrx,vry,vrz"]
+    columns = ["ax","ay","az","vrx","vry","vrz"]
     room = "piZero4"
     instructions = ["read_bmp","read_mpu"]
     t=-1
     while True:
         t+=1
+        print(t)
         if t == 1000:
             break
         acc_raw,gyr_raw,T = await pi_zero_request(room,instructions[1])
         acc = acc_raw[1:-1].split(",")
         gyr = gyr_raw[1:-1].split(",")
-        data.append([float(acc[0]),float(acc[1]),float(acc[2]),float(gyr[0]),float(gyr[1]),float([gyr[2]])])
+        data.append([float(acc[0]),float(acc[1]),float(acc[2]),float(gyr[0]),float(gyr[1]),float(gyr[2])])
 
     df = pd.DataFrame(data=data,columns=columns)
     df["ax"].plot()
