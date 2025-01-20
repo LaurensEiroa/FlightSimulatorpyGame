@@ -26,11 +26,11 @@ class FlightSimulator:
     
     def draw_coords(self):
         length = 1000
-        end_x_axis = project_3D_to_2D(length,0,0,self.alfa)
+        end_x_axis = project_3D_to_2D(length,0,0)
         pygame.draw.line(self.screen,"red",self.center,(self.center[0]+end_x_axis[0],self.center[1]+end_x_axis[1]),2)
-        end_y_axis = project_3D_to_2D(0,length,0,self.alfa)
+        end_y_axis = project_3D_to_2D(0,length,0)
         pygame.draw.line(self.screen,"red",self.center,(self.center[0]+end_y_axis[0],self.center[1]+end_y_axis[1]),2)
-        end_z_axis = project_3D_to_2D(0,0,length,self.alfa)
+        end_z_axis = project_3D_to_2D(0,0,length)
         pygame.draw.line(self.screen,"red",self.center,(self.center[0]+end_z_axis[0],self.center[1]+end_z_axis[1]),2)
 
     def update_screen(self):
@@ -52,11 +52,12 @@ class FlightSimulator:
     def run(self):
         import numpy as np
         steps = 1000
-        vz,h = np.linspace(0,4*math.pi,steps),np.linspace(0,200,steps)
+        vy, vz,h = np.linspace(0,6*math.pi,steps), np.linspace(0,2*math.pi,steps),np.ones(steps)
+        #vz,h = np.ones(steps),np.ones(steps)
         t = -1
         while self.running:
             t+=1
-            self.objects[0].update_status([0,0,vz[t]],h[t])
+            self.objects[0].update_status([0,vy[t],vz[t]],h[t])
             self.record_event()
             self.update_screen()
             # Control frame rate
