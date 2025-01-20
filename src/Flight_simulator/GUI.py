@@ -41,6 +41,7 @@ class FlightSimulator:
             # Draw objects
             for obj in self.objects:
                 obj.draw_object(self.screen,self.center)
+                obj.display_webcam(self.screen)
             # Update display
             pygame.display.flip()
 

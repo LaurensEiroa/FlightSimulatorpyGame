@@ -1,4 +1,6 @@
 import pygame
+import pygame.camera
+from pygame.locals import *
 import numpy as np
 
 from src.Flight_simulator.utils import project_3D_to_2D
@@ -9,6 +11,20 @@ class Drone:
         self.position = np.asarray(init_position)
         self.angle = np.asarray(init_angle)
         self.length_width_height = np.asarray(length_width_height)
+        self.cam = self.init_camera()
+
+    def init_camera(self,window=(180,120)):
+        pygame.camera.init()
+        camlist = pygame.camera.list_cameras()
+        if not camlist:
+            raise ValueError("Sorry, no cameras detected.")
+        cam = pygame.camera.Camera(camlist[0], window)
+        cam.start()
+        return cam
+
+    def display_webcam(self, screen, position=(0, 0)):
+        webcam_image = self.cam.get_image()
+        screen.blit(webcam_image, position)
 
     def drone_to_3d_reference_frame_transform(self, gyro_readings):
         return np.asarray([-gyro_readings[1],gyro_readings[0],gyro_readings[2]])
@@ -69,3 +85,9 @@ class Drone:
             start = project_3D_to_2D(rotated_vertices[x,0], rotated_vertices[x,1], rotated_vertices[x,2])
             end = project_3D_to_2D(rotated_vertices[y,0], rotated_vertices[y,1], rotated_vertices[y,2])
             pygame.draw.line(screen, "blue", (center_position[0] + start[0], center_position[1] + start[1]), (center_position[0] + end[0], center_position[1] + end[1]), 2)
+
+
+
+
+
+
