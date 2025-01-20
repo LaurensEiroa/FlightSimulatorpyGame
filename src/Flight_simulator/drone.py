@@ -3,55 +3,65 @@ import math
 from src.Flight_simulator.utils import project_3D_to_2D
 
 class Drone:
-    def __init__(self,initial_position=[0,0,0],initial_orientation=[0,0,0],length_width_height = [90,60,20]):
-        self.initial_position = initial_position
-        self.initial_orientation = initial_orientation
-        self.length = length_width_height[0]
-        self.width = length_width_height[1]
-        self.height = length_width_height[2]
+    def __init__(self,init_position=[0,0,0],init_angle=[0,0,0],length_width_height = [90,60,20]):
+        self.position = init_position
+        self.angle = init_angle
+        self.length_width_height = length_width_height
 
-        self.position = self.initial_position
-        self.orientation = None
-        pass
 
-    def update_status(self,gyro,h):
+    def drone_to_3d_reference_frame_transform(self, gyro_readings):
+        return[-gyro_readings[1],gyro_readings[0],gyro_readings[2]]
+    
+    def update_orientation(self,rotation_3d_frame):
+        self.angle = rotation_3d_frame # TODO += or = ??
+
+    def update_heigth(self,h):
         self.position[2] = h
-        self.orientation = gyro
 
+    def update_status(self,rotation,h):
+        rotation_3d_frame = self.drone_to_3d_reference_frame_transform(rotation)
+        self.update_orientation(rotation_3d_frame)
+        self.update_heigth(h)
         pass
+
+    def apply_rotation(self,vectors):
+        x_rotation = [[1,   0,                          0                       ],
+                      [0,   math.cos(self.angle[0]),    math.sin(self.angle[0]) ],
+                      [0,   math.cos(self.angle[0]),    math.sin(self.angle[0]) ]
+        ]
+        y_rotation = [[math.cos(self.angle[1]), 0,  math.sin(self.angle[1]) ],
+                      [0,                       1,  0                       ],
+                      [math.cos(self.angle[1]), 0,  math.sin(self.angle[1]) ]
+        ]
+        z_rotation = [[math.cos(self.angle[2]), math.sin(self.angle[2]),    0],
+                      [math.cos(self.angle[2]), math.sin(self.angle[2]),    0],
+                      [0,                       0,                          1]
+                      ]
+        rotated_vectors = []
+        for vector in vectors:
+            rotated_vector =  x_rotation @ vector
+            rotated_vector = y_rotation @ rotated_vector
+            rotated_vector = z_rotation @ rotated_vector
+            rotated_vectors.append(rotated_vector)
+
+        return rotated_vectors
+
 
     def draw_object(self,screen,center_position):
-        angles = self.orientation
-    
-        vr = math.sqrt(angles[0] ** 2 + angles[1] ** 2 + angles[2] ** 2)
-        if vr > 0:
-            theta = math.acos(angles[2] / vr)
-            phi = math.atan2(angles[1], angles[0])
-        else:
-            theta, phi = 0, 0
-
-        print(f"vr: {vr}\t\ttheta: {theta}\tphi:{phi}\t\tangles: {angles}")
         
-        # Corrected vertices calculation
+        # vertices of object
         vertices = [
-            [-self.length, self.position[2], -self.width],
-            [-self.length, self.position[2], self.width],
-            [self.length, self.position[2], self.width],
-            [self.length, self.position[2], -self.width],
-            [-self.length, self.position[2] + self.height, -self.width],
-            [-self.length, self.position[2] + self.height, self.width],
-            [self.length, self.position[2] + self.height, self.width],
-            [self.length, self.position[2] + self.height, -self.width]
+            [-self.length_width_height[0],  -self.length_width_height[1],   self.position[2]],
+            [-self.length_width_height[0],  self.length_width_height[1],    self.position[2]],
+            [self.length_width_height[0],   self.length_width_height[1],    self.position[2]],
+            [self.length_width_height[0],   -self.length_width_height[1],   self.position[2]],
+            [-self.length_width_height[0],  -self.length_width_height[1],   self.position[2] + self.length_width_height[2]],
+            [-self.length_width_height[0],  self.length_width_height[1],    self.position[2] + self.length_width_height[2]],
+            [self.length_width_height[0],   self.length_width_height[1],    self.position[2] + self.length_width_height[2]],
+            [self.length_width_height[0],   -self.length_width_height[1],   self.position[2] + self.length_width_height[2]]
         ]
 
-        # Apply rotation
-        rotated_vertices = []
-        for vertex in vertices:
-            x, y, z = vertex
-            rotated_x = x * math.cos(theta) * math.cos(phi) - y * math.sin(theta) + z * math.cos(theta) * math.sin(phi)
-            rotated_y = x * math.sin(theta) * math.cos(phi) + y * math.cos(theta) + z * math.sin(theta) * math.sin(phi)
-            rotated_z = -x * math.sin(phi) + z * math.cos(phi)
-            rotated_vertices.append([rotated_x, rotated_y, rotated_z])
+        rotated_vertices = self.apply_rotation(vertices)
 
         edges = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]]
 
@@ -59,4 +69,3 @@ class Drone:
             start = project_3D_to_2D(rotated_vertices[edge[0]][0], rotated_vertices[edge[0]][1], rotated_vertices[edge[0]][2])
             end = project_3D_to_2D(rotated_vertices[edge[1]][0], rotated_vertices[edge[1]][1], rotated_vertices[edge[1]][2])
             pygame.draw.line(screen, "blue", (center_position[0] + start[0], center_position[1] + start[1]), (center_position[0] + end[0], center_position[1] + end[1]), 2)
-        pass

@@ -52,12 +52,11 @@ class FlightSimulator:
     def run(self):
         import numpy as np
         steps = 1000
-        vx,vz,vy,h = np.ones(shape=steps),np.ones(shape=steps),np.linspace(0,800000,steps),np.linspace(0,200,steps)
+        vz,h = np.linspace(0,4*math.pi,steps),np.linspace(0,200,steps)
         t = -1
         while self.running:
             t+=1
-            self.objects[0].update_status([vx[t],vy[t],vz[t]],h[t])
-            self.objects[0].update_status([0,0,0],h[t])
+            self.objects[0].update_status([0,0,vz[t]],h[t])
             self.record_event()
             self.update_screen()
             # Control frame rate
