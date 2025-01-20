@@ -51,15 +51,19 @@ class FlightSimulator:
 
     def run(self):
         import numpy as np
-        vx,vy,vz,h = np.linspace(0,2*math.pi,1000),np.linspace(0,4*math.pi,1000),np.linspace(0,8*math.pi,1000),np.linspace(0,2,1000)
+        steps = 1000
+        vx,vz,vy,h = np.ones(shape=steps),np.ones(shape=steps),np.linspace(0,800000,steps),np.linspace(0,200,steps)
         t = -1
         while self.running:
             t+=1
             self.objects[0].update_status([vx[t],vy[t],vz[t]],h[t])
+            self.objects[0].update_status([0,0,0],h[t])
             self.record_event()
             self.update_screen()
             # Control frame rate
             self.clock.tick(60)  # Run at 60 frames per second
+            if t == steps:
+                 pygame.quit()
 
         pygame.quit()
 

@@ -1,5 +1,6 @@
 import pygame
 import math
+from src.Flight_simulator.utils import project_3D_to_2D
 
 class Drone:
     def __init__(self,initial_position=[0,0,0],initial_orientation=[0,0,0],length_width_height = [90,60,20]):
@@ -9,7 +10,7 @@ class Drone:
         self.width = length_width_height[1]
         self.height = length_width_height[2]
 
-        self.position = None
+        self.position = self.initial_position
         self.orientation = None
         pass
 
@@ -20,7 +21,7 @@ class Drone:
         pass
 
     def draw_object(self,screen,center_position):
-        angles = [angle * math.pi / 180 for angle in self.orientation]
+        angles = self.orientation
     
         vr = math.sqrt(angles[0] ** 2 + angles[1] ** 2 + angles[2] ** 2)
         if vr > 0:
@@ -55,7 +56,7 @@ class Drone:
         edges = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]]
 
         for edge in edges:
-            start = self.project_to_2D(rotated_vertices[edge[0]][0], rotated_vertices[edge[0]][1], rotated_vertices[edge[0]][2])
-            end = self.project_to_2D(rotated_vertices[edge[1]][0], rotated_vertices[edge[1]][1], rotated_vertices[edge[1]][2])
+            start = project_3D_to_2D(rotated_vertices[edge[0]][0], rotated_vertices[edge[0]][1], rotated_vertices[edge[0]][2])
+            end = project_3D_to_2D(rotated_vertices[edge[1]][0], rotated_vertices[edge[1]][1], rotated_vertices[edge[1]][2])
             pygame.draw.line(screen, "blue", (center_position[0] + start[0], center_position[1] + start[1]), (center_position[0] + end[0], center_position[1] + end[1]), 2)
         pass
