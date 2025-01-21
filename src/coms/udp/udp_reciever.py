@@ -14,7 +14,21 @@ class UDPReceiver:
         print("recieving data")
         buffer = b''
         max_dgram = Config.MAX_DGRAM_FRAME if data_type == "frame" else Config.MAX_DGRAM_DATA
-        for _ in range(0, max_dgram):
+        for i in range(0, max_dgram):
+            print(i)
+            packet, _ = self.server_socket.recvfrom(max_dgram)
+            buffer += packet
+            if len(packet) < max_dgram:
+                break
+        return buffer
+    
+    async def receive_data(self, data_type="image"):
+        buffer = b''
+        max_dgram = Config.MAX_DGRAM_FRAME if data_type == "frame" else Config.MAX_DGRAM_DATA
+        
+        t = 0
+        while True:
+            t+=1
             packet, _ = self.server_socket.recvfrom(max_dgram)
             buffer += packet
             if len(packet) < max_dgram:
@@ -24,29 +38,31 @@ class UDPReceiver:
 async def run():
     receiver = 'windows_computer'  # Replace with your receiver IP address
 
-    #udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
-    udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
+    udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
+    #udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
 
     while True:
-        frame_data = await udp_frame_receiver.receive_data(data_type="frame")
-        frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
+        #frame_data = await udp_frame_receiver.receive_data(data_type="frame")
         
-        #data = await udp_data_receiver.receive_data(data_type="data")
-        #data = data.decode('utf-8')
+        #frame = np.frombuffer(frame_data, dtype=np.uint8)
+        #frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
+        #print("frame recieved")
 
-        print(f"recieved frame")
+        
+        data = await udp_data_receiver.receive_data(data_type="data")
+        data = data.decode('utf-8')
+        print(f"recieved data {data}")
 
         # Overlay the received data onto the frame
         #cv2.putText(frame, data, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
         # Display the frame with the overlay
-        cv2.imshow('Received Frame', frame)
+        #if frame is not None:
+        #    cv2.imshow('Received Frame', frame)
 
         # Break the loop on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
 
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
 
-if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(run())
