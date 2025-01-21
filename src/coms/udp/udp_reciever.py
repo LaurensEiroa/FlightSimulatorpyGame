@@ -36,9 +36,10 @@ async def run():
         if data:
             data = data.decode('utf-8')
 
-        if frame_data and data:
-            # Overlay the received data onto the frame
-            cv2.putText(frame, data, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        if frame_data:
+            if data:
+                # Overlay the received data onto the frame
+                cv2.putText(frame, data, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
             # Display the frame with the overlay
             cv2.imshow('Received Frame', frame)
