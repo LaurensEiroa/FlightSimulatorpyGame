@@ -24,12 +24,12 @@ class UDPReceiver:
 async def run():
     receiver = Config.RECIEVER
 
-    udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
+    #udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
     udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
 
     while True:
         try:
-            data = await udp_data_receiver.receive_data(data_type="data")
+            data = None #await udp_data_receiver.receive_data(data_type="data")
         except Exception as e:
             print(e)
             data=None
