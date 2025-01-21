@@ -1,7 +1,7 @@
 # config.py
 class Config:
        IPs = {"ubuntu_laptop":     "192.168.129.24",
-              "windows_computer":  "192.168.129.4",
+              "windows_computer":  "192.168.129.5",
               "pi5":               "192.168.129.11",
               "piZero1":           "192.168.129.14",
               "piZero2":           "192.168.129.15",
