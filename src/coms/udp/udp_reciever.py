@@ -28,15 +28,16 @@ async def run():
     udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
 
     while True:
-        frame_data = await udp_frame_receiver.receive_data(data_type="frame")
-        if frame_data:
-            frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
-        
         data = await udp_data_receiver.receive_data(data_type="data")
         if data:
             data = data.decode('utf-8')
+            print(f"recieved data. {data}")
 
+        frame_data = await udp_frame_receiver.receive_data(data_type="frame")
+        
         if frame_data:
+            frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
+        
             if data:
                 # Overlay the received data onto the frame
                 cv2.putText(frame, data, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
