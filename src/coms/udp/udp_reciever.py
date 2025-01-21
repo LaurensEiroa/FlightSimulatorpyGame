@@ -28,13 +28,20 @@ async def run():
     udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
 
     while True:
-        data = await udp_data_receiver.receive_data(data_type="data")
+        try:
+            data = await udp_data_receiver.receive_data(data_type="data")
+        except Exception as e:
+            print(e)
+            data=None
         if data:
             data = data.decode('utf-8')
             print(f"received data: {data}")
-
-        frame_data = await udp_frame_receiver.receive_data(data_type="frame")
         
+        try:
+            frame_data = await udp_frame_receiver.receive_data(data_type="frame")
+        except Exception as e:
+            print(e)
+            frame_data = None
         if frame_data:
             frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
         
