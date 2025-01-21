@@ -10,4 +10,4 @@ if __name__=="__main__":
     print("starting simulator")
     simulator = FlightSimulator(objects=[drone])
     print("starting loop")
-    asyncio.get_event_loop().run_until_complete(simulator.test())
+    asyncio.get_event_loop().run_until_complete(simulator.run())
