@@ -10,7 +10,7 @@ from src.Flight_simulator.utils import project_3D_to_2D
 
 
 class Drone:
-    def __init__(self,receiver,init_position=[0,0,0],init_angle=[0,0,0],length_width_height = [90,60,20]):
+    def __init__(self,receiver,init_position=[0.,0.,0.],init_angle=[0.,0.,0.],length_width_height = [90,60,20]):
         self.position = np.asarray(init_position)
         self.angle = np.asarray(init_angle)
         self.length_width_height = np.asarray(length_width_height)
@@ -23,19 +23,24 @@ class Drone:
         screen.blit(self.frame, position)
 
     async def get_drone_data(self):
+        print("waiting for frame")
         frame_data = await self.udp_frame_receiver.receive_data(data_type="frame")
+        print("decoding frame")
         self.frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
 
+        print("waiting for data")
         data = await self.udp_data_receiver.receive_data(data_type="data")
         data = data.decode('utf-8')
+        print("decoding data")
         data = data.split("//")
+        print("updating orientation")
         self.update_orientation(data)
 
     def drone_to_3d_reference_frame_transform(self, gyro_readings):
         return np.asarray([-gyro_readings[1],gyro_readings[0],gyro_readings[2]])
     
     def update_orientation(self,rotation_3d_frame):
-        self.angle += rotation_3d_frame # TODO += or = ??
+        self.angle = rotation_3d_frame # TODO += or = ??
 
     def update_heigth(self,h):
         self.position[2] = h

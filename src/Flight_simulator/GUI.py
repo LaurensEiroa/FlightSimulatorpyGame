@@ -42,7 +42,7 @@ class FlightSimulator:
             # Draw objects
             for obj in self.objects:
                 obj.draw_object(self.screen,self.center)
-                obj.display_webcam(self.screen)
+                #obj.display_webcam(self.screen)
             # Update display
             pygame.display.flip()
 
@@ -51,15 +51,14 @@ class FlightSimulator:
                 if event.type == pygame.QUIT:
                     self.running = False
 
-    def test(self):
-        import numpy as np
+    async def test(self):
         steps = 1000
-        vy, vz,h = np.linspace(0,6*math.pi,steps), np.linspace(0,2*math.pi,steps),np.ones(steps)
+        vy, vz,h = np.linspace(0,math.pi,steps), np.linspace(0,10*math.pi,steps),np.ones(steps)
         #vz,h = np.ones(steps),np.ones(steps)
         t = -1
         while self.running:
             t+=1
-            self.objects[0].update_status([0,vy[t],vz[t]],h[t])
+            self.objects[0].test_update_status([0,0,vz[t]],h[t])
             self.record_event()
             self.update_screen()
             # Control frame rate
@@ -71,8 +70,11 @@ class FlightSimulator:
 
     async def run(self):
         while self.running:
+            print("waiting for drone data")
             await self.objects[0].get_drone_data()
+            print("recording events")
             self.record_event()
+            print("updating screen")
             self.update_screen()
             # Control frame rate
             self.clock.tick(60)  # Run at 60 frames per second

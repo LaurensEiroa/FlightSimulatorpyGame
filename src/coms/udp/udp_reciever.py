@@ -11,9 +11,10 @@ class UDPReceiver:
         self.server_socket.bind((receiver_ip, port))
 
     async def receive_data(self, data_type="image"):
+        print("recieving data")
         buffer = b''
         max_dgram = Config.MAX_DGRAM_FRAME if data_type == "frame" else Config.MAX_DGRAM_DATA
-        for _ in range(0, Config.MAX_DGRAM_COUNT):
+        for _ in range(0, max_dgram):
             packet, _ = self.server_socket.recvfrom(max_dgram)
             buffer += packet
             if len(packet) < max_dgram:
