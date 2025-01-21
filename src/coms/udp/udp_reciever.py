@@ -10,7 +10,7 @@ class UDPReceiver:
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((receiver_ip, port))
 
-    def receive_data(self, data_type="image"):
+    async def receive_data(self, data_type="image"):
         print("receiving data")
         buffer = b''
         max_dgram = Config.MAX_DGRAM_FRAME if data_type == "frame" else Config.MAX_DGRAM_DATA
@@ -31,7 +31,7 @@ async def run():
         data = await udp_data_receiver.receive_data(data_type="data")
         if data:
             data = data.decode('utf-8')
-            print(f"recieved data. {data}")
+            print(f"received data: {data}")
 
         frame_data = await udp_frame_receiver.receive_data(data_type="frame")
         
