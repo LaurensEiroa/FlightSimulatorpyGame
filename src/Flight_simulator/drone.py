@@ -7,7 +7,6 @@ from config import Config
 
 from src.coms.udp.udp_reciever import UDPReceiver
 from src.Flight_simulator.utils import project_3D_to_2D
-from src.picamera.picamera import Camera
 
 
 class Drone:
@@ -15,31 +14,13 @@ class Drone:
         self.position = np.asarray(init_position)
         self.angle = np.asarray(init_angle)
         self.length_width_height = np.asarray(length_width_height)
-        self.cam = self.init_camera()
         self.udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
         self.udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
         self.frame = None
-    
-
-    def init_camera(self,window=(180,120),camera="webcam"):
-        if camera=="webcam":
-            pygame.camera.init()
-            camlist = pygame.camera.list_cameras()
-            if not camlist:
-                raise ValueError("Sorry, no cameras detected.")
-            cam = pygame.camera.Camera(camlist[0], window)
-            cam.start()
-            return cam
-        elif camera=="picamera":
-            return Camera()
 
 
-    def display_camera(self, screen, position=(0, 0),camera="webcam"):
-        if camera=="webcam":
-            image = self.cam.get_image()
-        elif camera=="picamera":
-            image = self.frame
-        screen.blit(image, position)
+    def display_camera(self, screen, position=(0, 0)):
+        screen.blit(self.frame, position)
 
     async def get_drone_data(self):
         frame_data = await self.udp_frame_receiver.receive_data(data_type="frame")
@@ -81,7 +62,6 @@ class Drone:
         rotated_vectors = []
         for vector in vectors:
             rotated_vector =  z_rotation @ y_rotation @ x_rotation @ vector
-            print(f"original_vector {vector}\trotated_vector {rotated_vector}")
             rotated_vectors.append(rotated_vector)
 
         return np.asarray(rotated_vectors)
