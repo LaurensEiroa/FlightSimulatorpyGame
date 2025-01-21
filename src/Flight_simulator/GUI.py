@@ -1,5 +1,6 @@
 import pygame
 import math
+import numpy as np
 from src.Flight_simulator.utils import project_3D_to_2D
 
 class FlightSimulator:
@@ -50,7 +51,7 @@ class FlightSimulator:
                 if event.type == pygame.QUIT:
                     self.running = False
 
-    def run(self):
+    def test(self):
         import numpy as np
         steps = 1000
         vy, vz,h = np.linspace(0,6*math.pi,steps), np.linspace(0,2*math.pi,steps),np.ones(steps)
@@ -66,6 +67,15 @@ class FlightSimulator:
             if t == steps:
                  pygame.quit()
 
+        pygame.quit()
+
+    async def run(self):
+        while self.running:
+            await self.objects[0].get_drone_data()
+            self.record_event()
+            self.update_screen()
+            # Control frame rate
+            self.clock.tick(60)  # Run at 60 frames per second
         pygame.quit()
 
 if __name__=="__main__":
