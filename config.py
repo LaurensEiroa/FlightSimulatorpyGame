@@ -15,3 +15,7 @@ class Config:
 
        MAX_DGRAM_FRAME = 2**15  # 32,768 bytes for frames
        MAX_DGRAM_DATA = 1024  # 1,024 bytes for data
+
+       
+       SENDER = "piZero4"
+       RECIEVER = "windows_computer"
