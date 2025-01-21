@@ -24,43 +24,43 @@ class UDPReceiver:
 async def run():
 
     # Create a window
-    cv2.namedWindow("Received Frame", cv2.WINDOW_NORMAL)
+    #cv2.namedWindow("Received Frame", cv2.WINDOW_NORMAL)
     receiver = Config.RECIEVER
 
-    #udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
-    udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
+    udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
+    #udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
 
     while True:
-        #try:
-        #    data = await udp_data_receiver.receive_data(data_type="data")
-        #except Exception as e:
-        #    print(e)
-        #    data=None
-        #if data:
-        #    data = data.decode('utf-8')
-        #    print(f"received data: {data}")
-        
         try:
-            frame_data = await udp_frame_receiver.receive_data(data_type="frame")
+            data = await udp_data_receiver.receive_data(data_type="data")
         except Exception as e:
             print(e)
-            frame_data = None
-        if frame_data:
-            print("decoding")
-            frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
+            data=None
+        if data:
+            data = data.decode('utf-8')
+            print(f"received data: {data}")
+        
+        #try:
+        #    frame_data = await udp_frame_receiver.receive_data(data_type="frame")
+        #except Exception as e:
+        #    print(e)
+        #    frame_data = None
+        #if frame_data:
+        #    print("decoding")
+        #    frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
         
             #if data:
                 # Overlay the received data onto the frame
                 #cv2.putText(frame, data, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-            print("adding to overlay")
+        #    print("adding to overlay")
             # Display the frame with the overlay
-            cv2.imshow('Received Frame', frame)
+        #    cv2.imshow('Received Frame', frame)
 
         # Break the loop on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
 
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     asyncio.run(run())

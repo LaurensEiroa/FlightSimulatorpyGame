@@ -23,10 +23,10 @@ class Drone:
         screen.blit(self.frame, position)
 
     async def get_drone_data(self):
-        print("waiting for frame")
-        frame_data = await self.udp_frame_receiver.receive_data(data_type="frame")
-        print("decoding frame")
-        self.frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
+        #print("waiting for frame")
+        #frame_data = await self.udp_frame_receiver.receive_data(data_type="frame")
+        #print("decoding frame")
+        #self.frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
 
         print("waiting for data")
         data = await self.udp_data_receiver.receive_data(data_type="data")
