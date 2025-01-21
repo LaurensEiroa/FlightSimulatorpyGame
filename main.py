@@ -5,6 +5,6 @@ import asyncio
 
 
 if __name__=="__main__":
-    drone = Drone(receiver="ubuntu_laptop")
+    drone = Drone(receiver="windows_computer")
     simulator = FlightSimulator(objects=[drone])
     asyncio.get_event_loop().run_until_complete(simulator.run())
