@@ -2,7 +2,7 @@ import pygame
 import math
 import numpy as np
 from src.Flight_simulator.utils import project_3D_to_2D
-
+import asyncio
 class FlightSimulator:
     def __init__(self,size = (800,600),objects=[None]):
         self.objects = objects
@@ -42,7 +42,7 @@ class FlightSimulator:
             # Draw objects
             for obj in self.objects:
                 obj.draw_object(self.screen,self.center)
-                #obj.display_webcam(self.screen)
+                obj.display_camera(self.screen)
             # Update display
             pygame.display.flip()
 
@@ -55,6 +55,10 @@ class FlightSimulator:
         while self.running:
             print("waiting for drone data")
             await self.objects[0].get_drone_data()
+            await asyncio.sleep(0)
+            print("waiting for drone data")
+            await self.objects[0].get_drone_view()
+            await asyncio.sleep(0)
             print("recording events")
             self.record_event()
             print("updating screen")

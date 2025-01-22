@@ -15,10 +15,18 @@ class Drone:
         self.angle = np.asarray(init_angle)
         self.length_width_height = np.asarray(length_width_height)
         self.udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
+        self.udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
         self.frame = None
 
     def display_camera(self, screen, position=(0, 0)):
         screen.blit(self.frame, position)
+
+    async def get_drone_view(self):
+        frame = await self.udp_frame_receiver.receive_data(data_type="frame")
+        if frame:
+            np_frame = np.frombuffer(frame, dtype=np.uint8)
+            # Decode frame
+            self.frame = cv2.imdecode(np_frame, cv2.IMREAD_COLOR)
 
     async def get_drone_data(self):
         data = await self.udp_data_receiver.receive_data(data_type="data")
