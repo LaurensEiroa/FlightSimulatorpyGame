@@ -22,11 +22,12 @@ class Drone:
 
     async def get_drone_data(self):
         data = await self.udp_data_receiver.receive_data(data_type="data")
-        data = data.decode('utf-8')
-        angle, position = data.split("$$$")[0],data.split("$$$")[1]
-        angle, position = angle.split("//"), position.split("//")
-        self.angle = np.asarray([float(a) for a in angle])
-        self.position = np.asarray([float(p) for p in position])
+        if data:
+            data = data.decode('utf-8')
+            angle, position = data.split("$$$")[0],data.split("$$$")[1]
+            angle, position = angle.split("//"), position.split("//")
+            self.angle = np.asarray([float(a) for a in angle])
+            self.position = np.asarray([float(p) for p in position])
 
     def apply_rotation(self,vectors):
         x_rotation = np.asarray([   [1,   0,                        0                     ],
