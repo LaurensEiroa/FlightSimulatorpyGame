@@ -15,44 +15,18 @@ class Drone:
         self.angle = np.asarray(init_angle)
         self.length_width_height = np.asarray(length_width_height)
         self.udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
-        #self.udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
         self.frame = None
-
-        self.zero_angle_reading = np.zeros(3)
-        self.get_drone_data()
-        self.zero_angle_reading = self.angle
-
 
     def display_camera(self, screen, position=(0, 0)):
         screen.blit(self.frame, position)
 
     async def get_drone_data(self):
-        #print("waiting for frame")
-        #frame_data = await self.udp_frame_receiver.receive_data(data_type="frame")
-        #print("decoding frame")
-        #self.frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
-
         data = await self.udp_data_receiver.receive_data(data_type="data")
         data = data.decode('utf-8')
-        data = data.split("//")
-        self.update_orientation(data)
-
-    def drone_to_3d_reference_frame_transform(self, gyro_readings):
-        return np.asarray([-gyro_readings[1],gyro_readings[0],gyro_readings[2]])
-    
-    def update_orientation(self,rotation_3d_frame):
-        new_angle = np.asarray([float(a) for a in rotation_3d_frame]) # TODO += or = ??
-        print(new_angle - self.zero_angle_reading)
-
-        self.angle += (new_angle - self.zero_angle_reading)
-    def update_heigth(self,h):
-        self.position[2] = h
-
-    def test_update_status(self,rotation,h):
-        rotation_3d_frame = self.drone_to_3d_reference_frame_transform(rotation)
-        self.update_orientation(rotation_3d_frame)
-        self.update_heigth(h)
-        pass
+        angle, position = data.split("$$$")[0],data.split("$$$")[1]
+        angle, position = angle.split("//"), position.split("//")
+        self.angle = np.asarray([float(a) for a in angle])
+        self.position = np.asarray([float(p) for p in position])
 
     def apply_rotation(self,vectors):
         x_rotation = np.asarray([   [1,   0,                        0                     ],
@@ -71,7 +45,6 @@ class Drone:
         for vector in vectors:
             rotated_vector =  z_rotation @ y_rotation @ x_rotation @ vector
             rotated_vectors.append(rotated_vector)
-
         return np.asarray(rotated_vectors)
 
 

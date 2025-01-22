@@ -18,4 +18,4 @@ class Config:
 
        
        SENDER = "piZero4"
-       RECIEVER = "ubuntu_laptop"
+       RECIEVER = "windows_computer"
