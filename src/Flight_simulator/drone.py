@@ -8,6 +8,8 @@ from config import Config
 from src.coms.udp.udp_reciever import UDPReceiver
 from src.Flight_simulator.utils import project_3D_to_2D
 
+def numpy_to_surface(array):
+    return pygame.surfarray.make_surface(array)
 
 class Drone:
     def __init__(self,receiver,init_position=[0.,0.,0.],init_angle=[0.,0.,0.],length_width_height = [90,60,20]):
@@ -19,7 +21,8 @@ class Drone:
         self.frame = None
 
     def display_camera(self, screen, position=(0, 0)):
-        screen.blit(self.frame, position)
+        surface = numpy_to_surface(self.frame)
+        screen.blit(surface, position)
 
     async def get_drone_view(self):
         frame = await self.udp_frame_receiver.receive_data(data_type="frame")
