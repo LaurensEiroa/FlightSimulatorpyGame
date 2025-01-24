@@ -21,11 +21,8 @@ class Drone:
         self.frame = None
 
     def display_camera(self, screen, position=(0, 0)):
-        try:
-            surface = numpy_to_surface(self.frame)
-            screen.blit(surface, position)
-        except ValueError:
-            print("self frame is None")
+        surface = numpy_to_surface(self.frame)
+        screen.blit(surface, position)
 
     async def get_drone_view(self):
         frame = await self.udp_frame_receiver.receive_data(data_type="frame")
