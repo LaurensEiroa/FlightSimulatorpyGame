@@ -17,7 +17,7 @@ class Drone:
         self.angle = np.asarray(init_angle)
         self.length_width_height = np.asarray(length_width_height)
         self.udp_data_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_DATA_PORT)
-        self.udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
+        #self.udp_frame_receiver = UDPReceiver(receiver_ip=Config.IPs[receiver], port=Config.UDP_FRAME_PORT)
         self.frame = None
 
     def display_camera(self, screen, position=(0, 0)):
