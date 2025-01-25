@@ -42,7 +42,7 @@ class FlightSimulator:
             # Draw objects
             for obj in self.objects:
                 obj.draw_object(self.screen,self.center)
-                obj.display_camera(self.screen)
+                #obj.display_camera(self.screen)
             # Update display
             pygame.display.flip()
 
@@ -57,8 +57,8 @@ class FlightSimulator:
             await self.objects[0].get_drone_data()
             await asyncio.sleep(0)
             print("waiting for drone data")
-            await self.objects[0].get_drone_view()
-            await asyncio.sleep(0)
+            #await self.objects[0].get_drone_view()
+            #await asyncio.sleep(0)
             print("recording events")
             self.record_event()
             print("updating screen")
